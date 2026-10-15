@@ -9,10 +9,10 @@ function TodoList() {
 
     useEffect(() => {
         axios.get('https://jsonplaceholder.typicode.com/todos')
-            .then(response => {
+            .then((response) => {
                 setList(response.data)
             })
-    },[])
+    }, [])
 
     return (
         <div>
@@ -22,14 +22,9 @@ function TodoList() {
 
                 {list.map((todo) => (
                     <li>
-                        <Link to={`/tododetail/${todo.id}`}
-                            state={{
-                                id: todo.id,
-                                title: todo.title,
-                                completed: todo.completed
-                            }}>
-                            {todo.id}-
-                            {todo.title}
+                        <Link to={'/tododetail/' + todo.id}
+                            state={{ todo: todo }}>
+                            {todo.id}-{todo.title}
                         </Link>
                     </li>
                 ))}
