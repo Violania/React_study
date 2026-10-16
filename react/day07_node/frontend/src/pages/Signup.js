@@ -14,19 +14,21 @@ function Signup() {
         password: ''
     })
 
-    const [errors, setErrors] = useState()
+    // const [errors, setErrors] = useState() 버튼을 두번눌러야 작동해서 제거
 
 
     //버튼 클릭시 데이터베이스로 정보를 저장
     const handleSubmit = (e) => {
         e.preventDefault()
-        setErrors(SignupVail(values))
+        // setErrors(SignupVail(values)) 버튼을 두번눌러야 작동해서 제거
 
-        if(!errors){
+        const bError = SignupVail(values)
+
+        if (!bError) {
             return
         }
-
-        axios.post('http://localhost:3000/signup', values)
+        //서버에 회원가입 정보 전송
+        axios.post('/signup', values)
             .then(res => {
                 alert('가입성공' + res.data)
                 navi('/')
@@ -59,13 +61,13 @@ function Signup() {
                     <label>비밀번호</label>
                     <input placeholder="enter password"
                         type="password"
-                        onChange={handleInput} 
+                        onChange={handleInput}
                         name="password" />
                 </div>
 
                 <button className="btn-signup" type="submit" >가입완료</button>
 
-                <p>게정이 있으신가요?</p>
+                <p>계정이 있으신가요?</p>
                 <Link to='/'>로그인</Link>
 
             </form>

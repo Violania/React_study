@@ -7,7 +7,7 @@ function Login() {
 
     const [values, setValues] = useState({ email: '', password: '' })
 
-    const [errors, setErrors] = useState()
+    // const [errors, setErrors] = useState() 로그인버튼을 두번눌러야 작동해서 제거
 
     const navi = useNavigate();
 
@@ -15,17 +15,20 @@ function Login() {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        setErrors(LoginValidation(values))
+        const bError = LoginValidation(values)
+        // setErrors(LoginValidation(values)) //로그인 버튼을 두번눌러야 작동해서 제거
 
-        if (!errors) {
+        if (!bError) {
             return
         }
-
-        axios.post('http://localhost:3000/login', values)
+        //서버로 로그인요청
+        axios.post('/login', values)
             .then(res => {
                 if (res.data.result === "success") {
                     alert('로그인 성공')
-                    navi('/main_content' ,{state:{name:res.data.name}})
+                    //로그인 성공시 메인페이지로 자동으로 넘어감과 동시에 정보를 넘김
+                    navi('/main_content',
+                        { state: { name: res.data.name, email: res.data.email } })
                 } else {
                     alert('아이디나 비밀번호를 확인하세요')
                 }
@@ -38,6 +41,7 @@ function Login() {
             [e.target.name]: e.target.value// .value=입력상자의 값
         })
     }
+
     return (
         <div>
             <h2>로그인</h2>

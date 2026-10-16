@@ -11,10 +11,18 @@ app.use(express.json());
 
 //DB연결정보 등록
 const db = mysql.createConnection({
-    host: "localhost",
+    host: "react-mysql-database.c5w6qi6qs81o.ap-southeast-2.rds.amazonaws.com",
     user: "myuser",
-    password: '1111',
+    password: '12345678',
     database: 'mydb'
+})
+// DB연결 결과 출력
+db.connect((err) => {
+    if (err) {
+        console.log("DB 연결 실패")
+    } else {
+        console.log("DB 연결 성공")
+    }
 })
 
 //DB연결 및 쿼리 요청
@@ -23,13 +31,13 @@ const db = mysql.createConnection({
 app.post("/signup", (req, res) => {
     const sql = "insert into login ( `name`, `email`, `password` ) values (?)";
 
-    
     const values = [
         req.body.name,
         req.body.email,
         req.body.password
     ]
 
+    //데이터베이스에 정보입력
     db.query(sql, [values], (err, data) => {
         if (err) {
             return res.json("Error");
@@ -51,15 +59,49 @@ app.post("/login", (req, res) => {
             return res.json("Error")
         }
         if (data.length == 1) {
-            return res.json({ 
-                result: "success", 
-                name: data[0].name });
+            return res.json({
+                result: "success",
+                name: data[0].name,
+                email: data[0].email
+            });
         } else {
             return res.json("fail")
         }
     })
 })
 
-app.listen(3000, () => {
+//탈퇴요청
+app.post('/withdraw', (req, res) => {
+    const sql = 'delete from login where `email`=?';
+
+    const values = [
+        req.body.email
+    ]
+
+    db.query(sql, values, (err, data) => {
+        //delete쿼리를 수행한 후 완료된 행수를 반환
+        if (data.affectedRows > 0) {
+            return res.json('success'); //탈퇴성공
+        } else {
+            return res.json('fail'); //탈퇴실패
+        }
+    })
+})
+
+
+//aws 서버측에서 사용할 경로
+const path = require("path");
+
+app.use(express.static(path.join(__dirname, "build")));
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, "build", "index.html"));
+});
+
+const PORT = process.env.PORT || 3000;
+
+
+//서버 실행 및 대기
+app.listen(PORT, () => {
     console.log("연결중...")
 })
